@@ -26,6 +26,7 @@ open: onebyte_open,
 release: onebyte_release
 };
 char *onebyte_data = NULL;
+const ssize_t message_size = 1;
 int onebyte_open(struct inode *inode, struct file *filep)
 {
 return 0; // always successful
@@ -38,11 +39,16 @@ ssize_t onebyte_read(struct file *filep, char *buf, size_t
 count, loff_t *f_pos)
 {
 /*please complete the function on your own*/
+return simple_read_from_buffer(buf, count, f_pos, onebyte_data, message_size);
 }
 ssize_t onebyte_write(struct file *filep, const char *buf,
 size_t count, loff_t *f_pos)
 {
 /*please complete the function on your own*/
+ssize_t rc = message_size;
+rc = simple_write_to_buffer(onebyte_data, message_size, f_pos, buf , count);
+if (count > 1) rc = -ENOSPC;
+return rc;
 }
 static int onebyte_init(void)
 {
